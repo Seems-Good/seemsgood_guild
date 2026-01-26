@@ -15,6 +15,7 @@ use comrak::{markdown_to_html, ComrakOptions};
 // +-------------+
 const GIT_HASH: &str = env!("GIT_HASH");
 const GIT_BRANCH: &str = env!("GIT_BRANCH");
+const CURRENT_YEAR: &str = env!("CURRENT_YEAR");
 
 
 // +----------------+
@@ -247,7 +248,11 @@ async fn fetch_from_r2(url: &str) -> std::result::Result<String, String> {
 }
 
 
+// +---------------+
+// | Base Template |
+// +---------------+
 // Define a base struct once for noti and git branch
+// Base includes Navbar, Footer, Theme, CSS imports, and other reused assets.
 #[derive(Clone)]
 pub struct GitInfo {
     pub hash: &'static str,
@@ -263,10 +268,26 @@ impl GitInfo {
     }
 }
 
+// fix static typed date in layout.html 
+// get current year at build time.
+#[derive(Clone)]
+pub struct DateInfo {
+    pub date: &'static str,
+}
+
+impl DateInfo {
+    pub fn current() -> Self {
+        Self {
+            date: CURRENT_YEAR,
+        }
+    }
+}
+
 #[derive(Clone)]
 pub struct BaseTemplate {
     pub show_noti: bool,
     pub git: GitInfo,
+    pub date: DateInfo,
 }
 
 impl BaseTemplate {
@@ -274,6 +295,7 @@ impl BaseTemplate {
         Self {
             show_noti,
             git: GitInfo::current(),
+            date: DateInfo::current(),
         }
     }
 }
