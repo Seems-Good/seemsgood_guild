@@ -1,4 +1,5 @@
 use askama_axum::Template;
+use crate::BaseTemplate;
 
 #[derive(Debug)]
 enum PlayerClass {
@@ -47,7 +48,7 @@ struct Player {
 #[derive(Template)]
 #[template(path = "mythic-plus.html")]
 struct RaidFramesTemplate {
-    show_noti: bool,
+    base: BaseTemplate,
     players: Vec<Player>,
 }
 
@@ -111,7 +112,10 @@ pub async fn mythicplus_page() -> axum::response::Html<String> {
 
 
     // Rendering the template with the player data
-    let template = RaidFramesTemplate { show_noti: true, players };
+    let template = RaidFramesTemplate { 
+        base: BaseTemplate::new(true),
+        players
+    };
     let rendered = template.render().unwrap();
     axum::response::Html(rendered)
 }

@@ -9,6 +9,14 @@ use askama_axum::Template;
 use std::collections::HashMap;
 use comrak::{markdown_to_html, ComrakOptions};
 
+
+// +-------------+
+// | Git Version |
+// +-------------+
+const GIT_HASH: &str = env!("GIT_HASH");
+const GIT_BRANCH: &str = env!("GIT_BRANCH");
+
+
 // +----------------+
 // | Template logic |
 // +----------------+
@@ -238,6 +246,40 @@ async fn fetch_from_r2(url: &str) -> std::result::Result<String, String> {
         .map_err(|e| format!("Failed to read response text: {:?}", e))
 }
 
+
+// Define a base struct once for noti and git branch
+#[derive(Clone)]
+pub struct GitInfo {
+    pub hash: &'static str,
+    pub branch: &'static str,
+}
+
+impl GitInfo {
+    pub fn current() -> Self {
+        Self {
+            hash: GIT_HASH,
+            branch: GIT_BRANCH,
+        }
+    }
+}
+
+#[derive(Clone)]
+pub struct BaseTemplate {
+    pub show_noti: bool,
+    pub git: GitInfo,
+}
+
+impl BaseTemplate {
+    pub fn new(show_noti: bool) -> Self {
+        Self {
+            show_noti,
+            git: GitInfo::current(),
+        }
+    }
+}
+
+
+
 // +---------------------------+
 // | Build Pages from Templates|
 // +---------------------------+
@@ -247,7 +289,7 @@ use player_metadata::{build_roster, Player, build_raid, RaidMetaData};
 #[derive(Template)]
 #[template(path = "index.html")]
 struct IndexTemplate {
-    show_noti: bool,
+    base: BaseTemplate,
     raid_metadata: Vec<RaidMetaData>,
     rosters: HashMap<String, Vec<Player>>, 
 }
@@ -260,7 +302,7 @@ async fn home_page() -> Html<String> {
 
     let raid_metadata = build_raid();
     let template = IndexTemplate { 
-        show_noti: true, 
+        base: BaseTemplate::new(true),
         raid_metadata,
         rosters,
     };
@@ -272,10 +314,13 @@ async fn home_page() -> Html<String> {
 #[derive(Template)]
 #[template(path = "apply.html")]
 struct ApplyTemplate {
-    show_noti: bool,
+    base: BaseTemplate,
+
 }
 async fn apply_page() -> Html<String> {
-    let template = ApplyTemplate { show_noti: false };
+    let template = ApplyTemplate { 
+        base: BaseTemplate::new(false)
+    };
     let rendered = template.render().unwrap();
     Html(rendered)
 }
@@ -285,13 +330,13 @@ use about_data::{ContactInfo, build_contacts};
 #[derive(Template)]
 #[template(path = "about.html")]
 struct AboutTemplate {
-    show_noti: bool,
+    base: BaseTemplate,
     contacts: Vec<ContactInfo>,
 }
 async fn about_page() -> Html<String> {
     let contacts = build_contacts();
     let template = AboutTemplate { 
-        show_noti: true,
+        base: BaseTemplate::new(true),
         contacts,
     };
     let rendered = template.render().unwrap();
@@ -303,10 +348,12 @@ async fn about_page() -> Html<String> {
 #[derive(Template)]
 #[template(path = "wowaudit.html")]
 struct WowauditTemplate {
-    show_noti: bool,
+    base: BaseTemplate,
 }
 async fn wowaudit_page() -> Html<String> {
-    let template = WowauditTemplate { show_noti: true };
+    let template = WowauditTemplate { 
+        base: BaseTemplate::new(true)
+    };
     let rendered = template.render().unwrap();
     Html(rendered)
 }
@@ -315,10 +362,12 @@ async fn wowaudit_page() -> Html<String> {
 #[derive(Template)]
 #[template(path = "talents.html")]
 struct TalentsTemplate {
-    show_noti: bool,
+    base: BaseTemplate,
 }
 async fn talents_page() -> Html<String> {
-    let template = TalentsTemplate { show_noti: true };
+    let template = TalentsTemplate { 
+        base: BaseTemplate::new(true)
+    };
     let rendered = template.render().unwrap();
     Html(rendered)
 }
@@ -327,10 +376,12 @@ async fn talents_page() -> Html<String> {
 #[derive(Template)]
 #[template(path = "resources.html")]
 struct ResourcesTemplate{
-    show_noti: bool,
+    base: BaseTemplate,
 }
 async fn resources_page() -> Html<String> {
-    let template = ResourcesTemplate { show_noti: true };
+    let template = ResourcesTemplate { 
+        base: BaseTemplate::new(true)
+    };
     let rendered = template.render().unwrap();
     Html(rendered)
 }

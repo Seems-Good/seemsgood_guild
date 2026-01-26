@@ -34,12 +34,12 @@
 #[derive(Template)]
 #[template(path = "your_page.html")]
 struct YourPageTemplate {
-    show_noti: bool,
+    base: BaseTemplate, // base UI (nav bar, footer, theme, and main css file)
     // any other parameters needed (not including noti will fail during build)
 }
 async fn your_page() -> Html<String> {
     let t = YourPageTemplate {
-        show_noti: true,
+        base: BaseTemplate::new(true), // set the notification banner to true to display on page. (guild application promo)
     };
     let r = t.render().unwrap();
     Html(r)

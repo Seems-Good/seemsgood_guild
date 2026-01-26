@@ -352,7 +352,7 @@
     <main> 
       <section>
         <!-- Start of notification -->
-        {% if show_noti %}
+        {% if base.show_noti %}
         <div class="notification is-info has-text-centered">
           <button class="delete is-large"></button>
           <strong>Interested in joining the team???</strong>
@@ -414,6 +414,24 @@
           Blizzard Entertainment, Inc</a>. 
         All other content and trademarks are property of their respective owners.
       </p>
+    </div>
+    <!-- Git Version Footer -->
+    <div class="git-version-footer">
+      <span class="icon-text">
+        <span class="icon">
+          <i class="nf nf-fa-code_fork"></i>
+        </span>
+        <span>
+          Deployed from 
+          <a href="https://github.com/Jeremy-Gstein/seemsgood_guild/tree/{{ base.git.branch }}" target="_blank" rel="noopener">
+          <code>{{ base.git.branch }}</code>
+          </a>
+          @ 
+          <a href="https://github.com/Jeremy-Gstein/seemsgood_guild/commit/{{ base.git.hash }}" target="_blank" rel="noopener">
+            <code>{{ base.git.hash }}</code>
+          </a>
+        </span>
+      </span>
     </div>
   </footer>
 </html>

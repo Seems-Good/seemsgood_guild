@@ -1,5 +1,6 @@
 use axum::response::Html;
 use askama_axum::Template;
+use crate::BaseTemplate;
 
 #[derive(Debug)]
 enum PlayerClass {
@@ -47,7 +48,7 @@ struct Player {
 #[derive(Template)]
 #[template(path = "dps-sims.html")]
 struct DamageSimsTemplate {
-    show_noti: bool,
+    base: BaseTemplate,
     players: Vec<Player>,
 }
 
@@ -152,7 +153,10 @@ pub async fn damagesimspage() -> Html<String> {
 
     ];
 
-    let template = DamageSimsTemplate{ show_noti: true, players };
+    let template = DamageSimsTemplate{ 
+        base: BaseTemplate::new(true),
+        players 
+    };
     let rendered = template.render().unwrap();
     Html(rendered)
 }
