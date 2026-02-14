@@ -1,0 +1,29 @@
+name: Sync Upstream
+
+on:
+  schedule:
+    - cron: "0 * * * *"   # every hour
+  workflow_dispatch:       # allow manual runs
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout fork
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Add upstream remote
+        run: |
+          git remote add upstream https://github.com/Jeremy-Gstein/seemsgood_guild.git
+          git fetch upstream
+
+      - name: Merge upstream/main into fork/main
+        run: |
+          git merge upstream/main --no-edit || true
+
+      - name: Push changes back to fork
+        run: |
+          git push origin main
