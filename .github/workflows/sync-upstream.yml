@@ -25,10 +25,14 @@ jobs:
           git remote add upstream https://github.com/Jeremy-Gstein/seemsgood_guild.git
           git fetch upstream
 
-      - name: Merge upstream/main into fork/main
+      - name: Sync main
         run: |
+          git checkout main
           git merge upstream/main --no-edit || true
-
-      - name: Push changes back to fork
-        run: |
           git push origin main
+
+      - name: Sync devel
+        run: |
+          git checkout devel
+          git merge upstream/devel --no-edit || true
+          git push origin devel
