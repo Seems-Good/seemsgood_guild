@@ -36,7 +36,7 @@ static ASSETS_DIR: Dir = include_dir!("templates");
 // TODO: make generic handler for /content/
 const EVENTS_JSON_URL: &str = "https://r2.seemsgood.org/content/events.json";
 const PROGRESS_JSON_URL: &str = "https://r2.seemsgood.org/content/progress.json";
-const RAIDER_EXPECTATIONS_URL: &str = "https://r2.seemsgood.org/content/md/raider-expectations.md";
+const RAIDER_EXPECTATIONS_URL: &str = "https://markdown-r2.seemsgood.org/raider-expectations.md";
 
 // All routes for webpage that are not dynamic.
 fn router() -> Router {
