@@ -10,3 +10,7 @@ enabled = true
 head_sampling_rate = 1
 invocation_logs = true
 
+[[r2_buckets]]
+binding = "R2_CONTENT"
+bucket_name = "sg-cfr2"
+preview_bucket_name = "sg-cfr2"

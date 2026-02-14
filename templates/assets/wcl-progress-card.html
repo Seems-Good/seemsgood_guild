@@ -1,0 +1,70 @@
+<div class="card">
+  <div class="card-image">
+    <figure class="image">
+      <img
+          src="https://r2.seemsgood.org/content/media/sg-logo.png"
+          alt="Image of Seems Good Logo (no background)"/>
+    </figure>
+  </div>
+  <div class="card-content">
+    <div class="content has-text-left">
+      <p class="title is-4"> Manaforge Omega </p>
+      <p class="subtitle is-6"> Season 3 of The War Within </p>
+      <div class="media">
+        <div class="media-left">
+          <figure class="image is-48x48">
+            <img id="bossIcon" src="" alt="Boss Icon">
+          </figure>
+        </div>
+        <div class="media-content">
+          <p class="title is-6" id="bossName"> </p>
+          <p class="title is-6" id="pullCount">Pulls: </p>
+          <p class="title is-6" id="bestPercent">Best: </p> 
+        </div>
+      </div>
+    </div>
+  </div>
+  <footer class="card-footer">
+    <a class="card-footer-item" href="https://www.warcraftlogs.com/guild/progress/289615?zone=44"> 
+      <figure class="image is-32x32">
+        <img  src="https://assets.rpglogs.com/img/warcraft/favicon.png?v=2" alt="Warcraft Logs Logo"/>
+      </figure>
+      View on WarcraftLogs
+    </a>
+    <a class="card-footer-item" href="https://raider.io/guilds/us/stormrage/Seems%20Good">
+      <figure class="image is-32x32">
+        <img  src="https://cdn.raiderio.net/images/mstile-70x70.png"
+              alt="Raider.IO Logo"/>
+      </figure>
+      View on Raider.IO
+    </a>
+  </footer>
+  <div class="card-content">
+    <div class="content has-text-left">
+      <p class="subtitle is-6">Recent Mythic+</p>
+    </div>
+  </div>
+
+
+<script>
+async function loadBossData() {
+  try {
+    const response = await fetch("/progress"); 
+    if (!response.ok) throw new Error("Network response was not ok");
+
+    const bossData = await response.json();
+
+    // Populate widget
+    document.getElementById('bossIcon').src = bossData.iconImageUrl;
+    document.getElementById('bossName').textContent += bossData.name;
+    document.getElementById('pullCount').textContent += bossData.pullCount;
+    document.getElementById('bestPercent').textContent += bossData.bestPercentForDisplay;
+
+  } catch (err) {
+    console.error("Failed to load boss data:", err);
+  }
+}
+
+// Load on page load
+loadBossData();
+</script>

@@ -1,0 +1,59 @@
+<!-- Season Card Template -->
+<div class="card">
+  <div class="card-image">
+    <figure class="image is-16by9 has-ratio">
+      <!-- TODO: we should add a video field  -->
+      <!-- with card.video_url, card.has_video, and card.group_photo for thumbnail -->
+      {% if card.fight_is_video %}
+      <video class="has-rounded-border" controls muted 
+             preload="metadata" playsinline 
+             poster="https://r2.seemsgood.org/content/media/{{ card.group_photo }}.png">
+        <source src="https://r2.seemsgood.org/content/media/{{ card.group_photo }}-video.mp4" type="video/mp4">
+        Your browser does not support HTML5 video.
+      </video>
+      {% else %} 
+      <img src="https://r2.seemsgood.org/content/media/{{ card.group_photo }}" 
+           alt="Mythic {{ card.fight_name }} Kill - Group Photo">
+      {% endif %}
+    </figure>
+  </div>
+  <div class="card-content">
+    <div class="content has-text-left">
+      <p class="title is-4"> Mythic {{ card.fight_name }} Kill </p>
+      <p class="subtitle is-6">{{ card.season }} of {{ card.expansion }}</p>
+      <time datetime="{{ card.datetime }}"> {{ card.pretty_datetime }} </time>
+    </div>
+  </div>
+  <footer class="card-footer">
+    <a class="card-footer-item" href="https://www.warcraftlogs.com/reports/{{ card.log_id }}?fight=last">
+      <figure class="image is-32x32 mr-2">
+        <img src="https://assets.rpglogs.com/img/warcraft/favicon.png?v=2" alt="Warcraft Logs Logo"/>
+      </figure>
+      View on Warcraft Logs
+    </a>
+    <a class="card-footer-item" onclick="toggleRaidPopup('popup-{{ card.fight_key }}')" style="cursor: pointer;">
+      <figure class="image is-32x32 mr-2">
+        <img src="https://r2.seemsgood.org/content/icons/group-finder.jpg" alt="Group Finder Icon"/>
+      </figure>
+      View Roster
+    </a>
+  </footer>
+  <!-- Popups for each raid -->
+  <div id="popup-{{ card.fight_key }}" class="raid-popup hidden">
+    <button class="delete is-large" onclick="toggleRaidPopup('popup-{{ card.fight_key }}')" 
+            style="position: absolute; top: 10px; right: 10px; background: transparent; border: none; color: white; cursor: pointer;">
+    </button>
+    {% for player in rosters[card.fight_key] %}
+    <div 
+      class="raid-box" 
+      onclick="openPlayerProfile('{{ player.realm }}/{{ player.name }}')" 
+      style="background-color: {{ player.class.rgb() }};"
+    >
+      <img src="{{ player.role.icon_url() }}" alt="{{ player.role }}" style="width: 16px; height: 16px;" />
+      <span>{{ player.name }}</span>
+      <span style="font-size: 11px;">{{ player.realm }}</span>
+      <div class="tooltip">View on WoW Armory</div>
+    </div>
+    {% endfor %}
+  </div>
+</div>

@@ -1,0 +1,367 @@
+{% extends "layout.html" %}
+{% block content %}
+<!-- link to github markdown css (fix headers and indents) -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/github-markdown-css/5.1.0/github-markdown-light.min.css" />
+
+<style>
+  /* Base markdown transition for smooth theme switching */
+  .markdown-body {
+    transition: color 0.3s ease, background-color 0.3s ease;
+  }
+
+  /* Dark mode styles triggered by your theme toggle class */
+  html.theme-dark .markdown-body {
+    background-color: #14171B; /* dark background */
+    color: #ddd !important;
+  }
+
+  html.theme-dark .markdown-body a {
+    color: #58a6ff !important; /* link color for dark */
+  }
+
+  html.theme-dark .markdown-body blockquote {
+    border-left-color: #444 !important;
+    color: #aaa !important;
+  }
+
+  html.theme-dark .markdown-body hr {
+    border-top-color: #444 !important;
+  }
+
+  html.theme-dark .markdown-body table {
+    border-color: #444 !important;
+  }
+
+  /* Fix dotted lists in dark mode */
+  html.theme-dark .markdown-body ul {
+    list-style-type: disc !important; /* Use disc for bullets */
+    padding-left: 1.5em !important;
+  }
+
+  html.theme-dark .markdown-body ul ul {
+    list-style-type: circle !important; /* nested lists */
+  }
+
+  /* Optional: Light mode explicit overrides if needed */
+  html.theme-light .markdown-body {
+    background-color: #fff;
+    color: #222;
+  }
+
+  html.theme-light .markdown-body a {
+    color: #0366d6;
+  }
+  /* Fix dotted lists in light mode */
+  html.theme-light .markdown-body ul {
+    list-style-type: disc !important; /* Use disc for bullets */
+    padding-left: 1.5em !important;
+  }
+
+  html.theme-light .markdown-body ul ul {
+    list-style-type: circle !important; /* nested lists */
+  }
+
+
+</style>
+
+
+
+<section class="section">
+  <div class="container" id="expectations-box">
+    <!-- Spinner while loading -->
+    <div class="has-text-centered" id="loading-spinner">
+      <span class="icon is-large">
+        <i class="nf nf-dev-spinner nf-pulse nf-3x"></i>
+      </span>
+      <p>Loading Raider Expectations...</p>
+    </div>
+
+    <!-- Content will be injected here -->
+    <div id="expectations-content" class="fade-in"></div>
+  </div>
+</section>
+
+<!-- Useful links to wowaudit pages -->
+<div class="container is-flex is-justify-content-center is-align-items-center is-flex-wrap-wrap"
+     style="gap:10px; margin-top:20px; margin-bottom:70px;">
+
+  <a class="button is-link is-outlined is-clickable"
+     href="https://wowaudit.com/sheet/us/stormrage/seems-good/main">
+    <span class="icon">
+      <i class="nf nf-md-microsoft_excel"></i>
+    </span>
+    <span>View Spreadsheet</span>
+  </a>
+
+  <a class="button is-link is-outlined is-clickable"
+     href="https://www.wowaudit.com/us/stormrage/seems-good/main/neighborhood?map_id=1&layer_index=0">
+    <span class="icon">
+      <i class="nf nf-fa-house_chimney"></i>
+    </span>
+    <span>Neighborhood Planner</span>
+  </a>
+
+  <a class="button is-link is-outlined is-clickable"
+     href="https://www.wowaudit.com/us/stormrage/seems-good/main/wishlists/loot_history">
+    <span class="icon">
+      <i class="nf nf-fa-history"></i>
+    </span>
+    <span>Loot History</span>
+  </a>
+</div>
+
+<!-- Fade-in CSS for content -->
+<style>
+  #expectations-content.fade-in {
+    opacity: 0;
+    transition: opacity 0.6s ease-in-out;
+  }
+  #expectations-content.fade-in.visible {
+    opacity: 1;
+  }
+
+  /* Spinner centering */
+  #loading-spinner {
+    margin: 2rem 0;
+  }
+
+  /* Table of Contents base style */
+  #custom-toc {
+    position: fixed;
+    bottom: 10px;
+    right: 10px;
+    width: 280px;
+    max-height: 80vh;
+    overflow: hidden;
+    padding: 1rem;
+    z-index: 9999;
+    font-family: sans-serif;
+    font-size: 0.9rem;
+    border-radius: 6px;
+    border: 1px solid #dbdbdb;
+    background-color: #fff;
+    color: #363636;
+    box-shadow: 0 2px 3px rgba(10,10,10,0.1), 0 0 0 1px rgba(10,10,10,0.1);
+    transition: max-height 1.25s ease, padding 1.25s ease;
+  }
+
+  /* Dark theme TOC */
+  html.theme-dark #custom-toc {
+    background-color: #2b2b2b;
+    color: #f5f5f5;
+    border: 1px solid #555;
+    box-shadow: 0 2px 3px rgba(0,0,0,0.6), 0 0 0 1px rgba(255,255,255,0.05);
+  }
+
+  /* TOC content */
+  #custom-toc strong {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 600;
+  }
+  #custom-toc hr {
+    border: none;
+    border-top: 1px solid #dbdbdb;
+    margin: 0.5rem 0 0.75rem 0;
+  }
+  html.theme-dark #custom-toc hr {
+    border-top: 1px solid #555;
+  }
+  #custom-toc a {
+    display: block;
+    margin-bottom: 0.5rem;
+    cursor: pointer;
+    color: #3273dc;
+    text-decoration: none;
+  }
+  html.theme-dark #custom-toc a {
+    color: #7aa6da;
+  }
+  #custom-toc a:hover {
+    text-decoration: underline;
+  }
+
+  /* Collapse toggle */
+  #custom-toc .toc-toggle {
+    display: block;
+    text-align: right;
+    margin-bottom: 0.5rem;
+    cursor: pointer;
+    font-weight: bold;
+    font-size: 0.85rem;
+    color: inherit;
+  }
+
+  /* Collapsed TOC state */
+  #custom-toc.collapsed {
+    overflow: hidden;
+    padding-bottom: 0.5rem;
+  }
+  #custom-toc.collapsed a,
+  #custom-toc.collapsed hr,
+  #custom-toc.collapsed strong {
+    display: none;
+  }
+  #custom-toc.collapsed .toc-toggle {
+    display: block;
+  }
+</style>
+
+<script>
+
+/* Build Table of Contents */
+function buildTOC() {
+  const container = document.getElementById('expectations-content');
+  const headings = Array.from(container.querySelectorAll("h1")); // "h1, h2, .. to append sub sections"
+  if (!headings.length) return;
+
+  const oldToc = document.getElementById("custom-toc");
+  if (oldToc) oldToc.remove();
+
+  const tocContainer = document.createElement("div");
+  tocContainer.id = "custom-toc";
+
+  // Collapse toggle
+  const toggle = document.createElement("span");
+  toggle.className = "toc-toggle";
+  tocContainer.appendChild(toggle);
+
+  // TOC title and hr
+  const title = document.createElement("strong");
+  title.textContent = "Table of Contents";
+  tocContainer.appendChild(title);
+  tocContainer.appendChild(document.createElement("hr"));
+
+  // Add heading links
+  headings.forEach((heading, i) => {
+    if (!heading.id) heading.id = `toc_heading_${i}`;
+    const link = document.createElement("a");
+    link.href = `#${heading.id}`;
+    link.textContent = heading.textContent.trim();
+
+    if (heading.tagName === "H2") link.style.paddingLeft = "0.5rem";
+    if (heading.tagName === "H3") link.style.paddingLeft = "1rem";
+
+    link.addEventListener("click", e => {
+      e.preventDefault();
+      document.getElementById(heading.id).scrollIntoView({ behavior: "smooth" });
+    });
+
+    tocContainer.appendChild(link);
+  });
+
+  // Restore collapse state from localStorage
+  let collapsed = localStorage.getItem("tocCollapsed") === "true";
+  if (collapsed) tocContainer.classList.add("collapsed");
+  toggle.textContent = collapsed ? "Expand ▲" : "Collapse ▼";
+
+  // Smooth collapse/expand fix
+  toggle.addEventListener("click", () => {
+    const isCollapsed = tocContainer.classList.contains("collapsed");
+
+    if (isCollapsed) {
+      // EXPAND
+      tocContainer.style.display = "block";
+      const fullHeight = tocContainer.scrollHeight + "px";
+      tocContainer.style.height = "0px";
+      tocContainer.classList.remove("collapsed");
+
+      // Trigger reflow for transition
+      tocContainer.offsetHeight;
+
+      tocContainer.style.transition = "height 0.4s ease";
+      tocContainer.style.height = fullHeight;
+
+      tocContainer.addEventListener(
+        "transitionend",
+        () => {
+          tocContainer.style.height = "auto"; // keep auto after transition
+          tocContainer.style.transition = "";
+        },
+        { once: true }
+      );
+
+      toggle.textContent = "Collapse ▼";
+      localStorage.setItem("tocCollapsed", false);
+    } else {
+      // COLLAPSE
+      const currentHeight = tocContainer.scrollHeight + "px";
+      tocContainer.style.height = currentHeight;
+
+      // Trigger reflow
+      tocContainer.offsetHeight;
+
+      tocContainer.style.transition = "height 0.4s ease";
+      tocContainer.style.height = toggle.offsetHeight + "px"; // toggle height only
+
+      tocContainer.classList.add("collapsed");
+
+      tocContainer.addEventListener(
+        "transitionend",
+        () => {
+          tocContainer.style.transition = "";
+          tocContainer.style.height = "";
+        },
+        { once: true }
+      );
+
+      toggle.textContent = "Expand ▲";
+      localStorage.setItem("tocCollapsed", true);
+    }
+  });
+
+  document.body.appendChild(tocContainer);
+}
+
+
+
+  /* Smoothly load content with fade-in and TOC */
+async function loadExpectations() {
+  const spinner = document.getElementById('loading-spinner');
+  const contentDiv = document.getElementById('expectations-content');
+
+  try {
+    const res = await fetch('/expectations');
+    if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
+    const html = await res.text();
+
+    // Parse HTML and remove inline styles
+    const parser = new DOMParser();
+    const doc = parser.parseFromString(html, 'text/html');
+    doc.querySelectorAll('style').forEach(s => s.remove());
+    doc.querySelectorAll('[style]').forEach(el => el.removeAttribute('style'));
+
+    // Insert content invisible
+    contentDiv.innerHTML = doc.body.innerHTML;
+    contentDiv.style.opacity = 0;
+    contentDiv.offsetHeight; // force reflow
+
+    // Fade out spinner
+    spinner.style.transition = 'opacity 0.4s ease';
+    spinner.style.opacity = 0;
+    spinner.addEventListener('transitionend', () => {
+      spinner.style.display = 'none';
+
+      // Fade in content
+      contentDiv.style.transition = 'opacity 0.6s ease-in-out';
+      contentDiv.style.opacity = 1;
+      contentDiv.classList.add('visible');
+
+      // Build TOC after fade-in starts
+      buildTOC();
+    }, { once: true });
+
+  } catch (err) {
+    console.error('Failed to load expectations:', err);
+    spinner.style.display = 'none';
+    contentDiv.innerHTML = '<p>Content unavailable.</p>';
+    contentDiv.style.opacity = 1;
+    contentDiv.classList.add('visible');
+  }
+}
+
+document.addEventListener('DOMContentLoaded', loadExpectations);
+</script>
+
+{% endblock %}
+

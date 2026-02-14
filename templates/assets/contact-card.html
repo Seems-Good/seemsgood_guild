@@ -1,0 +1,33 @@
+<!-- Contact Cards: Name, Discord, (Option) Bnet Role in guild. -->
+<div class="tags has-addons is-flex is-flex-wrap-wrap">
+  {% if contact.is_gm %}
+  <!-- is_gm so use crown icon -->
+  <span class="tag is-medium is-dark">
+    <i class="nf nf-md-crown"></i>
+  </span>
+  {% else %}
+  <!-- !is_gm so use crown icon -->
+  <span class="tag is-medium is-dark">
+    <i class="nf nf-md-shield"></i>
+  </span>
+  {% endif %}
+  <span class="tag is-medium is-dark"> 
+    {{ contact.name }} 
+  </span>
+  <span class="tag is-link is-medium">
+    <i class="{{ contact.discord_icon }}"></i>
+  </span>
+  <span class="tag is-link is-medium is-dark is-hoverable">
+    {{ contact.discord }}
+  </span>
+  {% if contact.battlenet == "#" %}
+  <!-- hide bnet tag/icon -->
+  {% else %}
+  <span class="tag is-info is-medium">
+    <i class="{{ contact.battlenet_icon }}"></i>
+  </span>
+  <span class="tag is-info is-medium is-hoverable">
+    {{ contact.battlenet }}
+  </span>
+  {% endif %}
+</div>

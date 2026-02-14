@@ -1,0 +1,126 @@
+<style>
+/* css/html for scrolling-events */
+.scroll-container {
+  height: 8em;              /* enough to show ~5 lines */
+  overflow: hidden;
+  position: relative;
+  text-align: left;
+  margin: 1.3em; 
+}
+
+.scroll-content {
+  display: flex;
+  flex-direction: column;
+  align-items: left;
+  text-align: center;
+  gap: 0.3em;               /* spacing between lines */
+  animation: marquee 90s linear infinite;
+}
+
+.scroll-line {
+  display: flex;
+  align-items: left;      /* vertically center icon + text */
+  /*font-size: 0.9rem;         match Bulma body size */
+  /*line-height: 1.4; */
+  white-space: nowrap;      /* keep all on one line */
+}
+
+.scroll-line img {
+  width: 16px;
+  height: 16px;
+  margin-right: 0.5em;
+  vertical-align: middle;
+}
+
+@keyframes marquee {
+  from { transform: translateY(0); }
+  to { transform: translateY(-50%); }
+}
+</style>
+
+<script>
+  async function loadScrollingEvents() {
+    try {
+      const response = await fetch("/events");
+      const data = await response.json();
+
+      const content = document.getElementById("scrollContent");
+      content.innerHTML = "";
+
+      // Dungeon ID -> { name, icon_url }
+      const dungeonMap = {
+        503: { name: "Ara-Kara", icon_url: "https://cdn.raiderio.net/images/wow/icons/large/inv_achievement_dungeon_arak-ara.jpg" },
+        542: { name: "Eco-Dome", icon_url: "https://cdn.raiderio.net/images/wow/icons/large/inv_112_achievement_dungeon_ecodome.jpg" },
+        378: { name: "Halls of Atonement", icon_url: "https://cdn.raiderio.net/images/wow/icons/large/achievement_dungeon_hallsofattonement.jpg" },
+        525: { name: "Operation: Floodgate", icon_url: "https://cdn.raiderio.net/images/wow/icons/large/inv_achievement_dungeon_waterworks.jpg" },
+        499: { name: "Priory of Sacred Flame", icon_url: "https://cdn.raiderio.net/images/wow/icons/large/inv_achievement_dungeon_prioryofthesacredflame.jpg" },
+        392: { name: "Tazavesh: Gambit", icon_url: "https://cdn.raiderio.net/images/wow/icons/large/achievement_dungeon_theotherside_dealergexa.jpg" },
+        391: { name: "Tazavesh: Streets", icon_url: "https://cdn.raiderio.net/images/wow/icons/large/achievement_dungeon_brokerdungeon.jpg" },
+        505: { name: "The Dawnbreaker", icon_url: "https://cdn.raiderio.net/images/wow/icons/large/inv_achievement_dungeon_dawnbreaker.jpg" }
+      };
+      
+      // Key Colors 
+      const keyColors = {
+        green: "#1eff00",
+        blue: "#0070dd",     
+        purple: "#a335ee",
+        orange: "#ff8000",   
+        white: "#ffffff",  
+        gray: "#9d9d9d",
+        yellow: "#e6cc80"
+      };
+
+      function getKeyColor(level) {
+        if (level <= 8) return keyColors.green; // +2-+8 are green (common)
+        if (level <= 11) return keyColors.blue; // +9-+11 are blue (rare)
+        if (level <= 14) return keyColors.purple; // +12-+14 are purple (epic)
+        if (level <= 15) return keyColors.orange; // +15-+20 are orange (legendary)
+        if (level <= 30) return keyColors.yellow; // +16-+30 are yellow (rank 1 parse)
+        return keyColors.gray;  // default gray. we shouldnt hit this but if we get >1 or <20 this will throw.
+      }
+
+      const lines = [];
+      for (const char of data.characters) {
+        if (char.data && char.data.dungeons_done) {
+          for (const dungeon of char.data.dungeons_done) {
+            const dungeonInfo = dungeonMap[dungeon.dungeon];
+            const dungeonName = dungeonInfo ? dungeonInfo.name : `Unknown (${dungeon.dungeon})`;
+            const dungeonIcon = dungeonInfo ? dungeonInfo.icon_url : "";
+
+            const lineDiv = document.createElement("div");
+            lineDiv.className = "scroll-line";
+
+            if (dungeonIcon) {
+              const img = document.createElement("img");
+              img.src = dungeonIcon;
+              img.alt = dungeonName;
+              img.style.width = "16px";
+              img.style.height = "16px";
+              img.style.marginRight = "4px";
+              img.style.verticalAlign = "middle";
+              lineDiv.appendChild(img);
+            }
+            // Apply key level color
+            const textSpan = document.createElement("span");
+            textSpan.style.color = getKeyColor(dungeon.level);
+            textSpan.textContent = `${char.name} +${dungeon.level} ${dungeonName}`;
+
+            lineDiv.appendChild(textSpan);
+            lines.push(lineDiv);
+          }
+        } else {
+          const noDataDiv = document.createElement("div");
+          noDataDiv.textContent = `${char.name} (${char.realm}) - no data`;
+          lines.push(noDataDiv);
+        }
+      }
+      // Render twice for scrolling loop
+      lines.concat(lines).forEach(line => content.appendChild(line));
+
+    } catch (err) {
+      console.error("Failed to load scrolling events:", err);
+    }
+  }
+
+  loadScrollingEvents();
+</script>

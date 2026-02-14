@@ -7,28 +7,26 @@
     <meta name="title" content="Seems Good | US - Stormrage" />
     <meta name="description" content="Seems Good - a World of Warcraft guild with a community who enjoy Raiding, Mythic+, and PvP. Interested in joining? Learn more at seemsgood.org " />
     <meta name="viewport" content="width=device-width, initial-scale=1">
-
     <!-- Open Graph / Facebook -->
     <meta property="og:type" content="website" />
     <meta property="og:url" content="https://seemsgood.org/" />
     <meta property="og:title" content="Seems Good | US - Stormrage" />
     <meta property="og:description" content="Seems Good - a World of Warcraft guild with a community who enjoy Raiding, Mythic+, and PvP. Interested in joining? Learn more at seemsgood.org " />
-    <meta property="og:image" content="https://r2.seemsgood.org/content/mythic-progress.png" />
-
+    <meta property="og:image" content="https://r2.seemsgood.org/content/media/sg-logo.png" />
     <!-- Twitter -->
     <meta property="twitter:card" content="summary_large_image" />
-    <meta property="twitter:url" content="https://development.seemsgood.org/" />
+    <meta property="twitter:url" content="https://seemsgood.org/" />
     <meta property="twitter:title" content="Seems Good | US - Stormrage" />
     <meta property="twitter:description" content="Seems Good - a World of Warcraft guild with a community who enjoy Raiding, Mythic+, and PvP. Interested in joining? Learn more at seemsgood.org " />
-    <meta property="twitter:image" content="https://r2.seemsgood.org/content/mythic-progress.png" />
-
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@1.0.2/css/bulma.min.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <meta property="twitter:image" content="https://r2.seemsgood.org/content/media/sg-logo.png" />
+    <!-- Stop Dark Reader from changing colors -->
+    <!-- see: (https://github.com/darkreader/darkreader/blob/main/CONTRIBUTING.md#disabling-dark-reader-on-your-site) -->
+    <meta name="darkreader-lock">
+    <!-- Load CSS -->
+    <link rel="stylesheet" href="/css/bulma.min.css">
+    <!-- Nerd Fonts Icons -->
+    <link rel="stylesheet" href="https://www.nerdfonts.com/assets/css/webfont.css">
     <link rel="icon" type="image/png" href="https://r2.seemsgood.org/content/media/favicon-96x96.png" sizes="32x32" />
-    <!-- Google Adsense-->
-    <meta name="google-adsense-account" content="ca-pub-2128472519302288">
-    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2128472519302288"
-     crossorigin="anonymous"></script>
     <!--Javascript to change theme on button press -->
     <script>
       document.addEventListener("DOMContentLoaded", () => {
@@ -66,11 +64,13 @@
 
         function updateIcon() {
           if (htmlElement.classList.contains("theme-dark")) {
-            icon.classList.remove("fa-moon");
-            icon.classList.add("fa-sun");
+            // we are dark mode. remove moon icon - set sun.
+            icon.classList.remove("nf-oct-moon");
+            icon.classList.add("nf-oct-sun");
           } else {
-            icon.classList.remove("fa-sun");
-            icon.classList.add("fa-moon");
+            // we are light mode. remove sun icon - set moon.
+            icon.classList.remove("nf-oct-sun");
+            icon.classList.add("nf-oct-moon");
           }
         }
       });
@@ -94,25 +94,176 @@
         }
       });
     </script>
-    <!-- navbar-buger (mobile clients)-->
     <script>
       document.addEventListener('DOMContentLoaded', () => {
-        const $navbarBurgers = Array.prototype.slice.call(document.querySelectorAll('.navbar-burger'), 0);
+        const burgers = document.querySelectorAll('.navbar-burger');
+        const menus = document.querySelectorAll('.navbar-menu');
+        const overlay = document.getElementById('navbarOverlay');
+        const tools = document.getElementById('dropdown-menu');
 
-        $navbarBurgers.forEach(el => {
-          el.addEventListener('click', () => {
-            const target = el.dataset.target;
-            const $target = document.getElementById(target);
-            el.classList.toggle('is-active');
-            $target.classList.toggle('is-active');
+
+        burgers.forEach(burger => {
+          burger.addEventListener('click', () => {
+            const targetId = burger.dataset.target;
+            const target = document.getElementById(targetId);
+            burger.classList.toggle('is-active');
+            target.classList.toggle('is-active');
+            overlay.classList.toggle('is-active');
+          });
+        });
+
+        // Close when clicking overlay
+        overlay.addEventListener('click', () => {
+          burgers.forEach(burger => burger.classList.remove('is-active'));
+          menus.forEach(menu => menu.classList.remove('is-active'));
+          overlay.classList.remove('is-active');
+
+        });
+
+        // Toggle dropdowns on mobile tap
+        const dropdowns = document.querySelectorAll('.navbar-item.has-dropdown');
+        dropdowns.forEach(dd => {
+          const link = dd.querySelector('.navbar-link');
+          link.addEventListener('click', e => {
+            e.preventDefault();
+            tools.classList.remove('is-hoverable');
+            dd.classList.toggle('is-active');
+
           });
         });
       });
     </script>
+    <style>
+    .navbar .navbar-dropdown {
+      display: block !important; /* override Bulma's display:none/block */
+      opacity: 0;
+      visibility: hidden;
+      transform: translateY(8px);
 
+      transition: opacity 220ms ease, transform 220ms ease, visibility 0s linear 220ms;
+
+      background-color: rgba(0,0,0,0.25) !important;
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      box-shadow: none !important;
+      border: none !important;
+      border-radius: 0.5rem;
+      padding: 0.5rem 0 !important;
+      min-width: 12rem;
+      z-index: 50;
+
+      position: absolute;
+      left: 0;
+      top: 100%;
+    }
+
+    /* Show dropdown on hover/click */
+    .navbar-item.has-dropdown.is-hoverable:hover .navbar-dropdown,
+    .navbar-item.has-dropdown.is-active .navbar-dropdown {
+      opacity: 1;
+      visibility: visible;
+      transform: translateY(0);
+      transition: opacity 400ms ease, transform 400ms ease;
+      pointer-events: auto;
+      transition-delay: 0s;
+    }
+
+    /* Dropdown items animation */
+    .navbar .navbar-dropdown .navbar-item {
+      background-color: transparent !important;
+      padding: 0.25rem 0.75rem !important;
+      transform: translateY(6px);
+      opacity: 0;
+      transition: opacity 280ms ease, transform 280ms ease;
+    }
+
+    /* Animate children in */
+    .navbar-item.has-dropdown.is-hoverable:hover .navbar-dropdown .navbar-item,
+    .navbar-item.has-dropdown.is-active .navbar-dropdown .navbar-item {
+      transform: translateY(0);
+      opacity: 1;
+    }
+
+    /* Staggered transitions */
+    .navbar-item.has-dropdown .navbar-dropdown .navbar-item:nth-child(1) { transition-delay: 0.02s; }
+    .navbar-item.has-dropdown .navbar-dropdown .navbar-item:nth-child(2) { transition-delay: 0.06s; }
+    .navbar-item.has-dropdown .navbar-dropdown .navbar-item:nth-child(3) { transition-delay: 0.10s; }
+
+    /* Buttons fill row */
+    .navbar .navbar-dropdown .button.is-primary {
+      width: 100%;
+      display: block;
+      margin: 0;
+    }
+
+    /* Optimize painting */
+    .navbar .navbar-dropdown,
+    .navbar .navbar-dropdown * {
+      will-change: opacity, transform;
+    }
+
+    /* === Mobile Adjustments === */
+    @media (max-width: 768px) {
+      .navbar-menu {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 75%;
+        max-width: 300px;
+        height: 100vh;
+        background-color: rgba(0, 0, 0, 0.95);
+        flex-direction: column;
+        align-items: flex-start;
+        padding: 2rem 1rem;
+        transform: translateX(-100%);
+        transition: transform 0.8s ease;
+        z-index: 1100; /* above overlay */
+      }
+
+      .navbar-menu.is-active {
+        transform: translateX(0);
+      }
+
+      /* Overlay behind menu */
+      .navbar-overlay {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100vh;
+        background-color: rgba(0, 0, 0, 0.6);
+        z-index: 1000;
+
+        pointer-events: none;
+      }
+
+      .navbar-overlay.is-active {
+        display: flex;
+        pointer-events: auto;
+        margin-left: 75%;
+      }
+
+      /* Sidebar item styles */
+      .navbar-item,
+      .navbar-item .button {
+        width: 100%;
+        margin: 0.5rem 0;
+        text-align: left;
+      }
+
+      /* Dropdown inside sidebar */
+      .navbar-item.has-dropdown .navbar-dropdown {
+        position: relative !important;
+        background: none !important;
+        box-shadow: none !important;
+        padding-left: 1rem;
+      }
+    }
+    </style>
   </head>
 <!-- start of navbar -->
-<nav class="navbar is-spaced has-shadow is-dark" role="navigation" aria-label="main navigation">
+<nav class="navbar has-shadow is-dark is-flex is-justify-content-space-between" role="navigation" aria-label="main navigation">
   <div class="navbar-brand">
     <figure class="image is-64x64 is-justify-content-center">
       <img src="https://r2.seemsgood.org/content/media/guild-logo-removebg.png" />
@@ -124,10 +275,11 @@
     <span aria-hidden="true"></span>
     <span aria-hidden="true"></span>
     <span aria-hidden="true"></span>
+    <span aria-hidden="true"></span>
   </a>
 
   <!-- Navbar menu -->
-  <div id="navbarData" class="navbar-menu">
+  <div class="navbar-menu" id="navbarData">
     <div class="navbar-start">
       <div class="navbar-item">
         <a class="button is-primary" href="/"><strong>Home</strong></a>
@@ -136,46 +288,57 @@
         <a class="button is-primary" href="/about"><strong>About</strong></a>
       </div>
       <div class="navbar-item">
-        <a class="button is-primary" href="/application"><strong>Apply</strong></a>
+        <a class="button is-primary" href="/resources"><strong>Resources</strong></a>
       </div>
 
       <!-- Dropdown Menu -->
-      <div class="navbar-item has-dropdown is-hoverable">
+      <div class="navbar-item has-dropdown is-hoverable" id="dropdown-menu">
         <a class="navbar-link">
-          <strong>Tools</strong>
+          <span class="button is-primary">
+            <strong>Tools</strong>
+          </span>
         </a>
         <div class="navbar-dropdown">
-          <a class="navbar-item" href="/keys">
-            <strong class="has-text-link">Mythic+</strong>
+          <div class="navbar-item">
+            <a class="button is-primary" href="/keys">
+            <strong>Mythic+</strong>
           </a>
-          <a class="navbar-item" href="/wowaudit">
-            <strong class="has-text-link">Wowaudit Spreadsheet</strong>
+          </div>
+          <div class="navbar-item">
+            <a class="button is-primary" href="/wowaudit">
+            <strong>Wowaudit Spreadsheet</strong>
           </a>
-          <a class="navbar-item" href="/dps-sims">
-            <div class="icon-text">
-              <span class="icon has-text-warning">
-                <i class="fas fa-exclamation-triangle"></i>
-              </span>
-              <span>
-                <strong class="has-text-warning">DPS Sims</strong>
-              </span>
-            </div>
+          </div>
+          <div class="navbar-item">
+            <a class="button is-primary" href="/talents">
+            <strong>Talent Trends</strong>
           </a>
+          </div>
+          <div class="navbar-item">
+            <a class="button is-primary" href="/application">
+            <strong>Apply</strong>
+          </a>
+          </div>
         </div>
       </div>
     </div>
 
-    <!-- Navbar end (for right-aligned buttons) -->
+    <!-- Navbar end (right-aligned buttons) -->
     <div class="navbar-end">
       <div class="navbar-item">
         <div class="buttons">
-          <!-- grants temp membership expires after 25 uses -->
-          <a class="button is-primary" href="https://discord.gg/nB8wAtmdzK">
-            <strong>Join us on Discord!</strong>
-          </a>
+
+          <!-- Discord (Apply for access to discord)-->
+          <!-- <a class="button is-primary" href="https://discord.gg/"> -->
+          <!--   <span class="icon"> -->
+          <!--     <i class="nf nf-fa-discord"></i> -->
+          <!--   </span> -->
+          <!-- </a> -->
+
+          <!-- Dark/Light theme toggle -->
           <button id="theme-toggle" class="button is-primary">
             <span class="icon">
-              <i class="fas fa-moon"></i>
+              <i class="nf nf-fa-moon"></i>
             </span>
           </button>
         </div>
@@ -184,11 +347,14 @@
   </div>
 </nav>
 
+<!-- Overlay -->
+<div class="navbar-overlay" id="navbarOverlay"></div>
+
 <body>
     <main> 
-      <section class="section pt-0 px-0">
+      <section>
         <!-- Start of notification -->
-        {% if show_noti %}
+        {% if base.show_noti %}
         <div class="notification is-info has-text-centered">
           <button class="delete is-large"></button>
           <strong>Interested in joining the team???</strong>
@@ -203,8 +369,8 @@
     </main>
   </body>
   <!--Start of Footer -->
-  <footer class="footer">
-    <nav class="breadcrumb is-centered" aria-label="breadcrumbs">
+  <footer class="footer" style="flex-shrink: 0; padding: 1.5rem 1rem; text-align: center;">
+   <nav class="breadcrumb is-centered" aria-label="breadcrumbs">
       <ul>
         <li><a href="/">Home</a></li>
         <li><a href="/about">About</a></li>
@@ -212,10 +378,62 @@
         <li><a href="/keys">Mythic+</a></li>
       </ul>
     </nav>
-    <div class="content has-text-centered is-small">
+    <a class="button is-rounded mb-2" href="https://github.com/Jeremy-Gstein/seemsgood_guild">
+      <span class="icon">
+        <i class="nf nf-fa-github"></i>
+      </span>
+      <span>
+        <strong>View Code on GitHub</strong>
+      </span>
+    </a>
+    <div class="content has-text-centered">
       <p>
-      <strong>Seems Good</strong> The source code for this website can be viewed via this <a href="https://github.com/Jeremy-Gstein/seemsgood_guild"> Github Repository. </a>
+        <strong>SeemsGood</strong>
+        Website Design Developed by 
+        <a href="https://j51b5.com">Jeremy
+            <i class="nf nf-dev-llvm"></i>
+            <small>(Shodo)</small>
+        </a> 
+        - Hosted with
+        <a href="https://radar.cloudflare.com/domains/domain/seemsgood.org">
+          <i class="nf nf-dev-cloudflare"></i>
+          Cloudflare Workers
+          <i class="nf nf-dev-cloudflareworkers"></i>
+        </a>
       </p>
+      <p class="is-size-7">
+        The source code is licensed under
+        <a href="https://opensource.org/license/mit" rel="license">MIT</a>.
+        Unless otherwise noted, website content © {{ base.date.date }}
+        <a href="https://seemsgood.org">seemsgood.org</a> 
+        is licensed under
+        <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="license">
+          CC BY NC SA 4.0</a>.
+      </p>
+      <p class="is-size-7">
+        World of Warcraft, is a trademark of 
+        <a href="https://www.blizzard.com/legal/b04001c4-dc81-480d-a475-5e276e241e4f/">
+          Blizzard Entertainment, Inc</a>. 
+        All other content and trademarks are property of their respective owners.
+      </p>
+    </div>
+    <!-- Git Version Footer -->
+    <div class="git-version-footer">
+      <span class="icon-text">
+        <span class="icon">
+          <i class="nf nf-fa-code_fork"></i>
+        </span>
+        <span>
+          Deployed from 
+          <a href="https://github.com/Jeremy-Gstein/seemsgood_guild/tree/{{ base.git.branch }}" target="_blank" rel="noopener">
+          <code>{{ base.git.branch }}</code>
+          </a>
+          @ 
+          <a href="https://github.com/Jeremy-Gstein/seemsgood_guild/commit/{{ base.git.hash }}" target="_blank" rel="noopener">
+            <code>{{ base.git.hash }}</code>
+          </a>
+        </span>
+      </span>
     </div>
   </footer>
 </html>

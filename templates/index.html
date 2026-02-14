@@ -1,102 +1,29 @@
 {% extends "layout.html" %}
 {% block content %}
 
-<!-- Warcraft Logs Progress Tracker -->
-<div class="container has-text-centered">
-  <div class="box">
-    <div class="card">
-      <div class="card-image">
-        <figure class="image">
-          <img
-              src="https://r2.seemsgood.org/content/mythic-progress.png"
-              alt="Image of WarcraftLogs Mythic Progress Tracking Widget"/>
-        </figure>
-      </div>
-    <div class="card-content">
-      <div class="content has-text-left">
-        <p class="title is-4"> Liberation of Undermine </p>
-        <p class="subtitle is-6"> Season 2 of The War Within </p>
-      </div>
-    </div>
-    <footer class="card-footer">
-      <a class="card-footer-item" href="https://www.warcraftlogs.com/guild/progress/289615?zone=42"> 
-        <figure class="image is-32x32">
-          <img  src="https://assets.rpglogs.com/img/warcraft/favicon.png?v=2" alt="Warcraft Logs Logo"/>
-        </figure>
-        View on WarcraftLogs
-      </a>
-      <a class="card-footer-item" href="https://raider.io/guilds/us/stormrage/Seems%20Good">
-        <figure class="image is-32x32">
-          <img  src="https://cdn.raiderio.net/images/mstile-70x70.png"
-                alt="Raider.IO Logo"/>
-        </figure>
-        View on Raider.IO
-      </a>
-  </footer>
-  </div>
-</div>
+<!-- js and css for 'raid-frames/scrolling-events' popup -->
+{% include "assets/roster-players.html" %}
 
-<!-- Season 1 TWW Post -->
-<div class="container has-text-centered">
-  <div class="box">
-    <div class="card">
-      <div class="card-image">
-        <figure class="image is-16by9 has-ratio">
-          <video class="has-rounded-border" controls muted 
-                 preload="metadata" playsinline 
-                 poster="https://r2.seemsgood.org/content/media/kyveza-group-pic.png">
-            <source src="https://r2.seemsgood.org/content/media/kyvesa-kill-video.mp4" type="video/mp4">
-            Your browser does not support HTML5 video.
-          </video>
-        </figure>
-      </div>
-      <div class="card-content">
-        <div class="content has-text-left">
-          <p class="title is-4"> Mythic Ky'veza Kill </p>
-          <p class="subtitle is-6"> Season 1 of The War Within </p>
-          <time datetime="2024-12-12"> 10:25pm -  12 December 2024 </time>
-        </div>
-      </div>
-      <footer class="card-footer">
-        <a class="card-footer-item" href="https://www.warcraftlogs.com/reports/Lfx3nrBVRWtNFzMQ?fight=last">
-          <figure class="image is-32x32 mr-2">
-            <img src="https://assets.rpglogs.com/img/warcraft/favicon.png?v=2" alt="Warcraft Logs Logo"/>
-          </figure>
-          View on Warcraft Logs
-        </a>
-      </footer>
+<!-- Box Wrapper -->
+<div class="box">
+ <!-- Current Season Events/Progress Tracker -->
+  <div class="container has-text-centered">
+    {% include "assets/wcl-progress-card.html" %}
+    <!-- 'scrolling-events' marquee animation --> 
+    {% include "assets/scrolling-events.html" %}
+    <div class="scroll-container">
+      <div class="scroll-content" id="scrollContent"></div>
     </div>
   </div>
-</div>
 
-<!-- Fyrakk Kill Post -->
-<div class="container has-text-centered">
-  <div class="box">
-    <div class="card">
-      <div class="card-image">
-        <figure class="image">
-          <img
-              src="https://r2.seemsgood.org/content/media/fyrakk-group-pic.jpg"
-              alt="Fyrakk Group Kill"/>
-        </figure>
-      </div>
-      <div class="card-content">
-        <div class="content has-text-left">
-          <p class="title is-4"> Mythic Fyrakk Kill </p>
-          <p class="subtitle is-6"> Season 4 of Dragonflight </p>
-          <time datetime="2024-7-1"> 10:03pm -  1 July 2024 </time>
-        </div>
-      </div>
-      <footer class="card-footer">
-        <a class="card-footer-item" href="https://www.warcraftlogs.com/reports/8fxkdGnVQmRNCJrv#fight=111">
-          <figure class="image is-32x32">
-            <img  src="https://assets.rpglogs.com/img/warcraft/favicon.png?v=2" alt="Warcraft Logs Logo"/>
-          </figure>
-          View on Warcraft Logs
-        </a>
-      </footer>
-    </div>
+  <!--  Season Raid Progress Card -->
+  <div class="container has-text-centered">
+    {% for card in raid_metadata %}
+    {% include "assets/season-card.html" %}
+    {% endfor %}
   </div>
+
+<!-- Close Content Box -->
 </div>
 
 {% endblock %}

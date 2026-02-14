@@ -4,7 +4,6 @@
 <!-- Main content -->
 <div class="container has-text-centered">
 
-
 <div class="card">
   <div class="card-image">
     <figure class="image is-16by9 has-ratio">
@@ -21,15 +20,16 @@
       <!-- About Box -->
       <div class="box">
         <h3 class="title is-3">About Us</h3>
-        <p class="subtitle has-text-left">Seems Good is a 2-day guild seeking players to achieve Cutting Edge. We aim to clear content at a quick pace while raiding only 5 hours a week. Our goal is to improve every tier, swapping time for quality.</p>
+        <p class="subtitle has-text-left">
+        Seems Good is a 2-day guild seeking players to achieve Cutting Edge. We aim to clear content at a quick pace while raiding only 6 hours a week. Our goal is to improve every tier, swapping time for quality.
+        </p>
       </div>
     </div>
-    
 
     <!-- Raid Info Box -->
     <div class="box">
       <h3 class="title is-3">Raid Days/Times</h3>
-      <p class="subtitle has-text-left">Tuesdays and Thursdays from 8:00 PM - 10:30 PM EST</p>
+      <p class="subtitle has-text-left">Tuesdays and Thursdays from 8:00 PM - 11:00 PM EST</p>
       <p class="subtitle has-text-left">Expectation: Everyone online 10 minutes before raid start
     </div>
 
@@ -37,13 +37,21 @@
     <div class="box">
       <h3 class="title is-3">Progression</h3>
       <p class="subtitle has-text-left">Season 1 TWW Progress: <span class="has-text-weight-bold">6/8M</span>Nerub-ar Palace</p>
+      <p class="subtitle has-text-left">Season 2 TWW Progress: <span class="has-text-weight-bold">8/8M</span>Liberation of Undermine</p>
+
     </div>
 
     <!-- Contact Box -->
     <div class="box">
       <h3 class="title is-3">Contacts</h3>
-      <p class="subtitle has-text-left"><span class="has-text-weight-bold">GM: ladora</span></p>
-      <p class="subtitle has-text-left"><span class="has-text-weight-bold">Recruiter: juuk</span></p>
+      <p class="subtitle has-text-left"> 
+      <span class="has-text-weight-bold"> 
+        GM/Officer:
+      </span>
+      </p>
+          {% for contact in contacts %}
+          {% include "assets/contact-card.html" %}
+          {% endfor %}
     </div>
 
     <!-- Are You A Good Fit Box -->
