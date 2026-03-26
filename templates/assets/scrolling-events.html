@@ -47,7 +47,18 @@
       const content = document.getElementById("scrollContent");
       content.innerHTML = "";
 
-      // Dungeon ID -> { name, icon_url }
+      const dungeonMap = {
+        402: { name: "Algeth'ar Academy", icon_url: "https://cdn.raiderio.net/images/wow/icons/large/achievement_dungeon_dragonacademy.jpg" },
+        558: { name: "Magisters' Terrace", icon_url: "https://cdn.raiderio.net/images/wow/icons/large/inv_achievement_dungeon_magistersterrace.jpg" },
+        560: { name: "Maisara Caverns", icon_url: "https://cdn.raiderio.net/images/wow/icons/large/inv_achievement_dungeon_maisarahills.jpg" },
+        559: { name: "Nexus-Point Xenas", icon_url: "https://cdn.raiderio.net/images/wow/icons/large/inv_achievement_dungeon_voidscararena.jpg" },
+        556: { name: "Pit of Saron", icon_url: "https://cdn.raiderio.net/images/wow/icons/large/achievement_dungeon_icecrown_pitofsaron.jpg" },
+        239: { name: "Seat of the Triumvirate", icon_url: "https://cdn.raiderio.net/images/wow/icons/large/achievement_boss_triumvirate_darknaaru.jpg" },
+        161: { name: "Skyreach", icon_url: "https://cdn.raiderio.net/images/wow/icons/large/achievement_dungeon_arakkoaspires.jpg" },
+        557: { name: "Windrunner Spire", icon_url: "https://cdn.raiderio.net/images/wow/icons/large/inv_achievement_dungeon_windrunnerspire.jpg" }
+      };
+
+      /* Dungeon ID -> { name, icon_url }
       const dungeonMap = {
         503: { name: "Ara-Kara", icon_url: "https://cdn.raiderio.net/images/wow/icons/large/inv_achievement_dungeon_arak-ara.jpg" },
         542: { name: "Eco-Dome", icon_url: "https://cdn.raiderio.net/images/wow/icons/large/inv_112_achievement_dungeon_ecodome.jpg" },
@@ -58,6 +69,7 @@
         391: { name: "Tazavesh: Streets", icon_url: "https://cdn.raiderio.net/images/wow/icons/large/achievement_dungeon_brokerdungeon.jpg" },
         505: { name: "The Dawnbreaker", icon_url: "https://cdn.raiderio.net/images/wow/icons/large/inv_achievement_dungeon_dawnbreaker.jpg" }
       };
+      */
       
       // Key Colors 
       const keyColors = {
