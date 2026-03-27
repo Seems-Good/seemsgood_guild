@@ -21,6 +21,36 @@
 - Axum (routing, handling http)
 - Cloudflare workers
 
+## Helper Scripts:
+helpers/ contains 4 bash scripts that help with formatting the roster, getting latest mythic plus, and raid progress.
+The current Implementation uses a local raspberry pi to run `./helpers/helpers_main.sh` daily via a systemd service and a small docker container with curl+jq Dependencies. 
+
+For testing/running locally you will need a helpers/.env file with the following variables:
+```bash
+cat << EOF > helpers/.env
+File: helpers/.env
+# --- Required for ./wcl-progress.sh.sh ---
+File: helpers/.env
+# --- Required for ./wcl-progress.sh.sh ---
+WCL_CLIENT_ID=
+WCL_CLIENT_SECRET=
+WCL_GUILD_ID=
+WCL_ZONE_ID=
+
+# --- Required for ./json_helpers.sh ---
+WOWAUDIT_TOKEN=
+
+# --- Required for ./handle_r2_upload.sh ---
+R2_ACCOUNT_ID=
+R2_ACCESS_KEY_ID=  
+R2_SECRET_ACCESS_KEY=
+R2_BUCKET_NAME=
+# --- Optional ---
+R2_DESTINATION_DIR=content
+
+EOF
+```
+
 ## Contributing:
 - Step 1. Create a route in ./src/lib.rs under router following the others scheme.
 ```rust
