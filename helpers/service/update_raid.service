@@ -1,0 +1,9 @@
+[Unit]
+Description=Update Raid Data & Player Sync
+
+[Service]
+Type=oneshot
+User=$USER
+WorkingDirectory=/home/$USER/seemsgood_guild/helpers
+EnvironmentFile=/home/$USER/seemsgood_guild/helpers/.env
+ExecStart=/home/$USER/seemsgood_guild/helpers/helpers_main.sh

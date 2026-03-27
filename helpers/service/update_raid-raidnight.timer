@@ -1,0 +1,31 @@
+[Unit]
+Description=Update Raid Data Tuesday/Thursday raid night sync every 10min
+
+[Timer]
+OnCalendar=Tue,Thu *-*-* 20:00:00
+OnCalendar=Tue,Thu *-*-* 20:10:00
+OnCalendar=Tue,Thu *-*-* 20:20:00
+OnCalendar=Tue,Thu *-*-* 20:30:00
+OnCalendar=Tue,Thu *-*-* 20:40:00
+OnCalendar=Tue,Thu *-*-* 20:50:00
+OnCalendar=Tue,Thu *-*-* 21:00:00
+OnCalendar=Tue,Thu *-*-* 21:10:00
+OnCalendar=Tue,Thu *-*-* 21:20:00
+OnCalendar=Tue,Thu *-*-* 21:30:00
+OnCalendar=Tue,Thu *-*-* 21:40:00
+OnCalendar=Tue,Thu *-*-* 21:50:00
+OnCalendar=Tue,Thu *-*-* 22:00:00
+OnCalendar=Tue,Thu *-*-* 22:10:00
+OnCalendar=Tue,Thu *-*-* 22:20:00
+OnCalendar=Tue,Thu *-*-* 22:30:00
+OnCalendar=Tue,Thu *-*-* 22:40:00
+OnCalendar=Tue,Thu *-*-* 22:50:00
+OnCalendar=Tue,Thu *-*-* 23:00:00
+OnCalendar=Tue,Thu *-*-* 23:10:00
+OnCalendar=Tue,Thu *-*-* 23:20:00
+OnCalendar=Tue,Thu *-*-* 23:30:00
+Unit=update_raid.service
+Persistent=true
+
+[Install]
+WantedBy=timers.target

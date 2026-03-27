@@ -28,10 +28,7 @@ The current Implementation uses a local raspberry pi to run `./helpers/helpers_m
 For testing/running locally you will need a helpers/.env file with the following variables:
 ```bash
 cat << EOF > helpers/.env
-File: helpers/.env
-# --- Required for ./wcl-progress.sh.sh ---
-File: helpers/.env
-# --- Required for ./wcl-progress.sh.sh ---
+# --- Required for ./wcl-progress.sh ---
 WCL_CLIENT_ID=
 WCL_CLIENT_SECRET=
 WCL_GUILD_ID=

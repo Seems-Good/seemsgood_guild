@@ -1,0 +1,10 @@
+[Unit]
+Description=Update raid data daily sync at midnight
+
+[Timer]
+OnCalendar=*-*-* 00:00:00
+Unit=update_raid.service
+Persistent=true
+
+[Install]
+WantedBy=timers.target
