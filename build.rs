@@ -20,7 +20,12 @@ fn main() {
 
     let git_branch = match branch_output {
         Ok(output) if output.status.success() => {
-            String::from_utf8_lossy(&output.stdout).trim().to_string()
+            let branch = String::from_utf8_lossy(&output.stdout).trim().to_string();
+            if branch == "HEAD" {
+                "main".to_string()
+            } else {
+                branch
+            }
         }
         _ => "unknown".to_string(),
     };

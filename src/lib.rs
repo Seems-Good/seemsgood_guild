@@ -49,6 +49,7 @@ fn router() -> Router {
         .route("/wowaudit", get(wowaudit_page))
         .route("/talents", get(talents_page))
         .route("/resources", get(resources_page))
+        .route("/arewelogging", get(awl_page))
         .route("/css/bulma.min.css", get(bulma_css_handler))
         .fallback(Redirect::permanent("/"))
 }
@@ -374,6 +375,21 @@ struct WowauditTemplate {
 }
 async fn wowaudit_page() -> Html<String> {
     let template = WowauditTemplate { 
+        base: BaseTemplate::new(true)
+    };
+    let rendered = template.render().unwrap();
+    Html(rendered)
+}
+
+
+// 'Are We Logging?' embed (logs.seemsgood.org)
+#[derive(Template)]
+#[template(path = "arewelogging.html")]
+struct AWLTemplate {
+    base: BaseTemplate,
+}
+async fn awl_page() -> Html<String> {
+    let template = AWLTemplate { 
         base: BaseTemplate::new(true)
     };
     let rendered = template.render().unwrap();
