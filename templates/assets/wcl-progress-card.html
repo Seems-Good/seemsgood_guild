@@ -1,11 +1,110 @@
+<style>
+  .sg-carousel {
+    position: relative;
+    overflow: hidden;
+    width: 100%;
+    background: #000;
+  }
+
+  .sg-carousel-track {
+    display: flex;
+    transition: transform 0.6s ease-in-out;
+    will-change: transform;
+  }
+
+  .sg-carousel-slide {
+    min-width: 100%;
+    position: relative;
+  }
+
+  .sg-carousel-slide img {
+    width: 100%;
+    height: 320px;
+    object-fit: cover;
+    display: block;
+  }
+
+  /* Prev / Next arrows */
+  .sg-carousel-btn {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background: rgba(0, 0, 0, 0.45);
+    border: none;
+    color: #fff;
+    font-size: 1.6rem;
+    padding: 0.4rem 0.75rem;
+    cursor: pointer;
+    z-index: 10;
+    border-radius: 4px;
+    transition: background 0.2s;
+    line-height: 1;
+    user-select: none;
+  }
+  .sg-carousel-btn:hover { background: rgba(0, 0, 0, 0.75); }
+  .sg-carousel-btn.prev { left: 0.5rem; }
+  .sg-carousel-btn.next { right: 0.5rem; }
+
+  /* Dot indicators */
+  .sg-carousel-dots {
+    display: flex;
+    justify-content: center;
+    gap: 0.4rem;
+    padding: 0.5rem 0 0.25rem;
+    background: #000;
+  }
+
+  .sg-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.35);
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    transition: background 0.2s;
+  }
+  .sg-dot.active { background: #fff; }
+</style>
+
 <div class="card">
   <div class="card-image">
-    <figure class="image">
-      <img
-          src="https://r2.seemsgood.org/content/media/sg-logo.png"
-          alt="Image of Seems Good Logo (no background)"/>
-    </figure>
+    <!-- =====================================================
+         Auto-scrolling carousel
+         To add or swap images, edit the list below.
+         Each slide needs an <img src="..." alt="..."> inside .sg-carousel-slide.
+         ===================================================== -->
+    <div class="sg-carousel" id="sgCarousel">
+      <div class="sg-carousel-track" id="sgTrack">
+
+        <div class="sg-carousel-slide">
+          <img src="https://r2.seemsgood.org/content/media/sg-logo.png"
+               alt="Seems Good Logo" />
+        </div>
+
+        <div class="sg-carousel-slide">
+          <img src="https://r2.seemsgood.org/content/media/celinka-run.png"
+               alt="Celinka's Raid For Mount" />
+        </div>
+
+        <!-- Add your raid / guild photos below.
+             Example:
+        <div class="sg-carousel-slide">
+          <img src="https://r2.seemsgood.org/content/media/photo2.png"
+               alt="Raid kill screenshot" />
+        </div>
+        -->
+
+      </div>
+
+      <button class="sg-carousel-btn prev" id="sgPrev" aria-label="Previous">&#8249;</button>
+      <button class="sg-carousel-btn next" id="sgNext" aria-label="Next">&#8250;</button>
+    </div>
+
+    <!-- Dot indicators -->
+    <div class="sg-carousel-dots" id="sgDots"></div>
   </div>
+
   <div class="card-content">
     <div class="content has-text-left">
       <p class="title is-4"> Dreamrift | Voidspire | March on Quel'Danas</p>
@@ -24,27 +123,97 @@
       </div>
     </div>
   </div>
+
   <footer class="card-footer">
     <a class="card-footer-item" href="https://www.warcraftlogs.com/guild/progress/289615?zone=46"> 
       <figure class="image is-32x32">
-        <img  src="https://assets.rpglogs.com/img/warcraft/favicon.png?v=2" alt="Warcraft Logs Logo"/>
+        <img src="https://assets.rpglogs.com/img/warcraft/favicon.png?v=2" alt="Warcraft Logs Logo"/>
       </figure>
       View on WarcraftLogs
     </a>
     <a class="card-footer-item" href="https://raider.io/guilds/us/stormrage/Seems%20Good">
       <figure class="image is-32x32">
-        <img  src="https://cdn.raiderio.net/images/mstile-70x70.png"
-              alt="Raider.IO Logo"/>
+        <img src="https://cdn.raiderio.net/images/mstile-70x70.png"
+             alt="Raider.IO Logo"/>
       </figure>
       View on Raider.IO
     </a>
   </footer>
+
   <div class="card-content">
     <div class="content has-text-left">
       <p class="subtitle is-6">Recent Mythic+</p>
     </div>
   </div>
 
+<script>
+(function () {
+  const AUTO_DELAY_MS = 5000; // time between slides (ms)
+
+  const track  = document.getElementById('sgTrack');
+  const dotsEl = document.getElementById('sgDots');
+  const slides = Array.from(track.querySelectorAll('.sg-carousel-slide'));
+
+  if (slides.length === 0) return;
+
+  let current = 0;
+  let timer   = null;
+
+  // Build dot buttons
+  slides.forEach((_, i) => {
+    const dot = document.createElement('button');
+    dot.className = 'sg-dot' + (i === 0 ? ' active' : '');
+    dot.setAttribute('aria-label', 'Go to slide ' + (i + 1));
+    dot.addEventListener('click', () => goTo(i));
+    dotsEl.appendChild(dot);
+  });
+
+  // Hide controls when there's only one image
+  if (slides.length === 1) {
+    dotsEl.style.display = 'none';
+    document.getElementById('sgPrev').style.display = 'none';
+    document.getElementById('sgNext').style.display = 'none';
+  }
+
+  function updateDots() {
+    dotsEl.querySelectorAll('.sg-dot').forEach((d, i) =>
+      d.classList.toggle('active', i === current));
+  }
+
+  function goTo(index) {
+    current = (index + slides.length) % slides.length;
+    track.style.transform = 'translateX(-' + (current * 100) + '%)';
+    updateDots();
+    resetTimer();
+  }
+
+  function next() { goTo(current + 1); }
+  function prev() { goTo(current - 1); }
+
+  function resetTimer() {
+    clearInterval(timer);
+    if (slides.length > 1) timer = setInterval(next, AUTO_DELAY_MS);
+  }
+
+  document.getElementById('sgNext').addEventListener('click', next);
+  document.getElementById('sgPrev').addEventListener('click', prev);
+
+  // Pause on hover
+  const carousel = document.getElementById('sgCarousel');
+  carousel.addEventListener('mouseenter', () => clearInterval(timer));
+  carousel.addEventListener('mouseleave', resetTimer);
+
+  // Swipe support for mobile
+  let touchStartX = 0;
+  carousel.addEventListener('touchstart', function(e) { touchStartX = e.touches[0].clientX; }, { passive: true });
+  carousel.addEventListener('touchend', function(e) {
+    const dx = e.changedTouches[0].clientX - touchStartX;
+    if (Math.abs(dx) > 40) dx < 0 ? next() : prev();
+  });
+
+  resetTimer();
+})();
+</script>
 
 <script>
 async function loadBossData() {
@@ -54,7 +223,6 @@ async function loadBossData() {
 
     const bossData = await response.json();
 
-    // Populate widget
     document.getElementById('bossIcon').src = bossData.iconImageUrl;
     document.getElementById('bossName').textContent += bossData.name;
     document.getElementById('pullCount').textContent += bossData.pullCount;
@@ -65,6 +233,5 @@ async function loadBossData() {
   }
 }
 
-// Load on page load
 loadBossData();
 </script>
