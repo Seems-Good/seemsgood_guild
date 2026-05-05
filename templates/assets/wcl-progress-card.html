@@ -24,7 +24,57 @@
     object-fit: contain;
     display: block;
   }
- 
+
+  /* YouTube lazy thumbnail slide */
+  .sg-yt-thumb {
+    position: relative;
+    cursor: pointer;
+    background: #000;
+    width: 100%;
+    height: 480px;
+    overflow: hidden;
+  }
+
+  .sg-yt-thumb img {
+    width: 100%;
+    height: 100%;
+    max-height: 480px;
+    object-fit: cover;
+    opacity: 0.75;
+    transition: opacity 0.2s;
+  }
+
+  .sg-yt-thumb:hover img {
+    opacity: 0.9;
+  }
+
+  .sg-yt-play {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    pointer-events: none;
+  }
+
+  .sg-yt-play svg {
+    filter: drop-shadow(0 2px 8px rgba(0,0,0,0.6));
+    transition: transform 0.2s;
+  }
+
+  .sg-yt-thumb:hover .sg-yt-play svg {
+    transform: scale(1.1);
+  }
+
+  .sg-yt-frame {
+    width: 100%;
+    height: 480px;
+    max-height: 480px;
+    display: block;
+    border: none;
+    background: #000;
+  }
+
   /* Prev / Next arrows */
   .sg-carousel-btn {
     position: absolute;
@@ -67,12 +117,14 @@
   }
   .sg-dot.active { background: #fff; }
 </style>
+
 <div class="card">
   <div class="card-image">
     <!-- =====================================================
          Auto-scrolling carousel
          To add or swap images, edit the list below.
          Each slide needs an <img src="..." alt="..."> inside .sg-carousel-slide.
+         For YouTube videos, use .sg-video-slide with a .sg-yt-thumb inside (lazy load).
          ===================================================== -->
     <div class="sg-carousel" id="sgCarousel">
       <div class="sg-carousel-track" id="sgTrack">
@@ -87,14 +139,46 @@
                alt="Celinka's Raid For Mount" />
         </div>
 
-        <div class="sg-carousel-slide">
-          <img src="https://r2.seemsgood.org/content/media/celinka-run1.jpg"
-               alt="Celinka's Raid For Mount" />
-        </div>
+        <!-- <div class="sg-carousel-slide"> -->
+        <!--   <img src="https://r2.seemsgood.org/content/media/celinka-run1.jpg" -->
+        <!--        alt="Celinka's Raid For Mount" /> -->
+        <!-- </div> -->
 
         <div class="sg-carousel-slide">
           <img src="https://r2.seemsgood.org/content/media/celinka-run2.jpg"
                alt="Celinka's Raid For Mount" />
+        </div>
+
+        <!-- YouTube video slide (lazy thumbnail — click to play)
+             To add more YouTube videos, copy this block and change data-videoid
+             to the 11-character ID from the YouTube URL. -->
+        <div class="sg-carousel-slide sg-video-slide">
+          <div class="sg-yt-thumb" data-videoid="cieq8XMWXyc" role="button" tabindex="0" aria-label="Play video">
+            <img src="https://img.youtube.com/vi/cieq8XMWXyc/hqdefault.jpg"
+                 alt="Seems Good Vs. Mythic Lightbinded Vanguard" loading="lazy" />
+            <div class="sg-yt-play">
+              <svg width="72" height="72" viewBox="0 0 72 72" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="36" cy="36" r="36" fill="rgba(0,0,0,0.65)"/>
+                <polygon points="28,20 56,36 28,52" fill="#ffffff"/>
+              </svg>
+            </div>
+          </div>
+        </div>
+
+        <!-- YouTube video slide (lazy thumbnail — click to play)
+             To add more YouTube videos, copy this block and change data-videoid
+             to the 11-character ID from the YouTube URL. -->
+        <div class="sg-carousel-slide sg-video-slide">
+          <div class="sg-yt-thumb" data-videoid="kfSlYoCR1NM" role="button" tabindex="0" aria-label="Play video">
+            <img src="https://img.youtube.com/vi/kfSlYoCR1NM/hqdefault.jpg"
+                 alt="Seems Good Vs. Mythic Vaelgor & Ezzorak " loading="lazy" />
+            <div class="sg-yt-play">
+              <svg width="72" height="72" viewBox="0 0 72 72" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="36" cy="36" r="36" fill="rgba(0,0,0,0.65)"/>
+                <polygon points="28,20 56,36 28,52" fill="#ffffff"/>
+              </svg>
+            </div>
+          </div>
         </div>
 
         <!-- Add your raid / guild photos below.
@@ -158,7 +242,7 @@
 
 <script>
 (function () {
-  const AUTO_DELAY_MS = 5000; // time between slides (ms)
+  const AUTO_DELAY_MS = 5000;
 
   const track  = document.getElementById('sgTrack');
   const dotsEl = document.getElementById('sgDots');
@@ -178,7 +262,7 @@
     dotsEl.appendChild(dot);
   });
 
-  // Hide controls when there's only one image
+  // Hide controls when there's only one slide
   if (slides.length === 1) {
     dotsEl.style.display = 'none';
     document.getElementById('sgPrev').style.display = 'none';
@@ -190,7 +274,19 @@
       d.classList.toggle('active', i === current));
   }
 
+  // Pause any active YouTube iframe via postMessage, and restore
+  // the lazy thumbnail if the user navigated away before interacting.
+  function pauseAllVideos() {
+    track.querySelectorAll('.sg-yt-frame').forEach(function (iframe) {
+      iframe.contentWindow.postMessage(
+        JSON.stringify({ event: 'command', func: 'pauseVideo', args: [] }),
+        '*'
+      );
+    });
+  }
+
   function goTo(index) {
+    pauseAllVideos();
     current = (index + slides.length) % slides.length;
     track.style.transform = 'translateX(-' + (current * 100) + '%)';
     updateDots();
@@ -200,9 +296,14 @@
   function next() { goTo(current + 1); }
   function prev() { goTo(current - 1); }
 
+  // Stop auto-advance while a video slide is active so it doesn't
+  // navigate away mid-playback.
   function resetTimer() {
     clearInterval(timer);
-    if (slides.length > 1) timer = setInterval(next, AUTO_DELAY_MS);
+    const isVideoSlide = slides[current] && slides[current].classList.contains('sg-video-slide');
+    if (slides.length > 1 && !isVideoSlide) {
+      timer = setInterval(next, AUTO_DELAY_MS);
+    }
   }
 
   document.getElementById('sgNext').addEventListener('click', next);
@@ -219,6 +320,32 @@
   carousel.addEventListener('touchend', function(e) {
     const dx = e.changedTouches[0].clientX - touchStartX;
     if (Math.abs(dx) > 40) dx < 0 ? next() : prev();
+  });
+
+  // Lazy YouTube thumbnail click-to-play
+  track.querySelectorAll('.sg-yt-thumb').forEach(function (thumb) {
+    function activateVideo() {
+      var id = thumb.dataset.videoid;
+      var iframe = document.createElement('iframe');
+      iframe.src = 'https://www.youtube.com/embed/' + id + '?autoplay=1&enablejsapi=1&rel=0&modestbranding=1';
+      iframe.className = 'sg-yt-frame';
+      iframe.title = thumb.querySelector('img').alt;
+      iframe.setAttribute('allowfullscreen', '');
+      iframe.setAttribute('allow', 'autoplay; encrypted-media; picture-in-picture');
+      iframe.setAttribute('frameborder', '0');
+      thumb.replaceWith(iframe);
+      // Stop auto-advance now that the iframe is live
+      clearInterval(timer);
+    }
+
+    thumb.addEventListener('click', activateVideo);
+    // Keyboard accessibility: Enter or Space triggers play
+    thumb.addEventListener('keydown', function (e) {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        activateVideo();
+      }
+    });
   });
 
   resetTimer();
